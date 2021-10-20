@@ -2,13 +2,14 @@ import sys
 import os
 import PyQt5.QtWidgets as qt
 from PyQt5 import uic, QtGui
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAggBase as FigureCanvas
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 import matplotlib.pyplot as plt
-import numpy as np
 import json
 
-from lissajousgen import LissajousGenerator, lissajous_figure
+from lissajousgen import LissajousGenerator
 
+
+script_dir = os.path.dirname(os.path.realpath(__file__))
 
 # Настройки фигуры по умолчанию
 default_settings = {
@@ -18,10 +19,12 @@ default_settings = {
     "width": 2
 }
 
-
 # Цвета для matplotlib
-with open("mpl.json", mode="r") as f:
+with open(os.path.join(script_dir, "mpl.json"), encoding="utf-8") as f:
     mpl_color_dict = json.load(f)
+
+with open(os.path.join(script_dir, "version.txt"), "r") as f:
+    VERSION = f.readline()
 
 
 class LissajousWindow(qt.QMainWindow):
@@ -29,16 +32,12 @@ class LissajousWindow(qt.QMainWindow):
         super(LissajousWindow, self).__init__()
 
         # Загружаем интерфейс из файла
-        uic.loadUi("main_window.ui", self)
+        uic.loadUi(os.path.join(script_dir, "main_window.ui"), self)
 
-        # Ставим версию и иконку
-        with open("version.txt", "r") as f:
-            version = f.readline()
-        self.setWindowTitle("Генератор фигур Лиссажу. Версия {}. CC BY-SA 4.0 Ivanov".format(
-            version
-        ))
-        scriptDir = os.path.dirname(os.path.realpath(__file__))
-        self.setWindowIcon(QtGui.QIcon(scriptDir + os.path.sep + "icon.bmp"))
+        self.setWindowTitle(f"Генератор фигур Лиссажу. Версия {VERSION}.")
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(os.path.join(script_dir, "icon.bmp")), QtGui.QIcon.Selected, QtGui.QIcon.On)
+        self.setWindowIcon(icon)
 
         # Создаём холст matplotlib
         self._fig = plt.figure(figsize=(4, 3), dpi=72)
@@ -70,8 +69,7 @@ class LissajousWindow(qt.QMainWindow):
         Обработчик нажатия на кнопку применения настроек
         """
         # Получаем данные из текстовых полей
-        settings = {}
-
+        settings = dict()
         settings["freq_x"] = float(self.freq_x_lineedit.text())
         settings["freq_y"] = float(self.freq_y_lineedit.text())
         settings["color"] = mpl_color_dict[self.color_combobox.currentText()]
@@ -80,10 +78,11 @@ class LissajousWindow(qt.QMainWindow):
         # Перестраиваем график
         self.plot_lissajous_figure(settings)
 
-    def plot_lissajous_figure(self, settings=default_settings):
+    def plot_lissajous_figure(self, settings=None):
         """
         Обновление фигуры
         """
+        settings = settings or default_settings
         # Удаляем устаревшие данные с графика
         for line in self._ax.lines:
             line.remove()
