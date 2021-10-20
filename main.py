@@ -13,10 +13,10 @@ script_dir = os.path.dirname(os.path.realpath(__file__))
 
 # Настройки фигуры по умолчанию
 default_settings = {
-    "freq_x": 2,
-    "freq_y": 3,
+    "freq_x": 3,
+    "freq_y": 2,
     "color": "midnightblue",
-    "width": 2
+    "width": 1
 }
 
 # Цвета для matplotlib
