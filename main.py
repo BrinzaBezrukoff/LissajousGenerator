@@ -1,10 +1,11 @@
 import sys
 import os
+import json
+
 import PyQt5.QtWidgets as qt
 from PyQt5 import uic, QtGui
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 import matplotlib.pyplot as plt
-import json
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 
 from lissajousgen import LissajousGenerator
 
@@ -20,7 +21,20 @@ default_settings = {
 }
 
 # Цвета для matplotlib
-with open(os.path.join(script_dir, "mpl.json"), encoding="utf-8") as f:
+default_colors = {
+    "Красный": "crimson",
+    "Зелёный": "green",
+    "Жёлтый": "gold",
+    "Синий": "midnightblue"
+}
+
+colors_path = os.path.join(script_dir, "mpl.json")
+
+if not os.path.exists(colors_path):
+    with open(colors_path, "w", encoding="utf-8") as f:
+        json.dump(default_colors, f, indent=4, ensure_ascii=False)
+
+with open(colors_path, encoding="utf-8") as f:
     mpl_color_dict = json.load(f)
 
 with open(os.path.join(script_dir, "version.txt"), "r") as f:
@@ -34,7 +48,7 @@ class LissajousWindow(qt.QMainWindow):
         # Загружаем интерфейс из файла
         uic.loadUi(os.path.join(script_dir, "main_window.ui"), self)
 
-        self.setWindowTitle(f"Генератор фигур Лиссажу. Версия {VERSION}.")
+        self.setWindowTitle(f"Генератор фигур Лиссажу. Версия {VERSION}")
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(os.path.join(script_dir, "icon.bmp")), QtGui.QIcon.Selected, QtGui.QIcon.On)
         self.setWindowIcon(icon)
@@ -49,6 +63,9 @@ class LissajousWindow(qt.QMainWindow):
         self._fc.setParent(self)
         self._fc.resize(400, 400)
         self._fc.move(20, 20)
+
+        plt.axis("off")
+        plt.tight_layout()
 
         # Создание генератора
         self.figure_generator = LissajousGenerator()
@@ -86,9 +103,6 @@ class LissajousWindow(qt.QMainWindow):
         self._ax.plot(figure.x_arr, figure.y_arr,
                       color=settings["color"],
                       linewidth=settings["width"])
-        plt.axis("off")
-        # Нужно, чтобы все элементы не выходили за пределы холста
-        plt.tight_layout()
         # Обновляем холст в окне
         self._fc.draw()
 
@@ -103,7 +117,6 @@ class LissajousWindow(qt.QMainWindow):
                                                       "PNG(*.png);;JPEG(*.jpg *.jpeg);;All Files(*.*)")
         if file_path == "":
             return
-        print(file_path)
         self._fig.savefig(file_path)
 
 
