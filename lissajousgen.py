@@ -1,43 +1,54 @@
 import numpy as np
-import time
 
 
-class lissajous_figure:
+class LissajousFigure:
     """
     Фигуры Лиссажу.
     Задаётся набором точек с координатами x и y.
     """
     def __init__(self, x_array, y_array):
-
-        self.x_arr=x_array
-        self.y_arr=y_array
+        self.x_arr = x_array
+        self.y_arr = y_array
 
 
 class LissajousGenerator:
     """
     Генерирует фигуры Лиссажу с заданными параметрами
     """
-    def __init__(self, resolution=20):
-        self.set_resolution(resolution)
-        
-        # Эта задержка эмулирует процедуру инициализации следующей версии генератора.
-        # Задержка будет убрана после обновления.
-        # Пока не трогать.
-        # P.S. В новом генераторе задержка будет только при инициализации.
-        # Фигуры будут генерироваться так же быстро, как и сейчас.
-        time.sleep(1)
+    def __init__(self, start=0, end=2*np.pi, resolution=100):
+        self.__start = start
+        self.__end = end
+        self.__resolution = resolution
 
-    def set_resolution(self, resolution):
-        """
-        resolution определяет количество точек в кривой
-        """
-        self._resolution = resolution
+    @property
+    def start(self):
+        return self.__start
 
-    def generate_figure(self, freq_x, freq_y):
+    @start.setter
+    def start(self, value):
+        self.__start = value
+
+    @property
+    def end(self):
+        return self.__end
+
+    @end.setter
+    def end(self, value):
+        self.__end = value
+
+    @property
+    def resolution(self):
+        return self.__resolution
+
+    @resolution.setter
+    def resolution(self, value):
+        self.__resolution = value
+
+    def generate(self, freq_x, freq_y):
         """
         Генерирует фигуру (массивы x и y координат точек) с заданными частотами.
         """
-        t = np.linspace(0, 2 * np.pi, self._resolution)
+        t = np.linspace(self.start, self.end, self.resolution)
         x = np.sin(freq_x * t)
-        y = np.cos(freq_y * t)
-        return lissajous_figure(x, y)
+        y = np.sin(freq_y * t)
+        return LissajousFigure(x, y)

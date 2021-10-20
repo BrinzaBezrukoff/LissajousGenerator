@@ -41,20 +41,17 @@ class LissajousWindow(qt.QMainWindow):
 
         # Создаём холст matplotlib
         self._fig = plt.figure(figsize=(4, 4), dpi=72)
-        # Добавляем на холст matplotlib область для построения графиков.
-        # В общем случае таких областей на холсте может быть несколько
-        # Аргументы add_subplot() в данном случае:
-        # ширина сетки, высота сетки, номер графика в сетке
         self._ax = self._fig.add_subplot(1, 1, 1)
 
         # Создаём qt-виджет холста для встраивания холста
         # matplotlib fig в окно Qt.
         self._fc = FigureCanvas(self._fig)
-        # Связываем созданный холст c окном
         self._fc.setParent(self)
-        # Настраиваем размер и положение холста
         self._fc.resize(400, 400)
         self._fc.move(20, 20)
+
+        # Создание генератора
+        self.figure_generator = LissajousGenerator()
 
         # Первичное построение фигуры
         self.plot_lissajous_figure()
@@ -72,7 +69,6 @@ class LissajousWindow(qt.QMainWindow):
         settings["freq_y"] = float(self.freq_y_lineedit.text())
         settings["color"] = mpl_color_dict[self.color_combobox.currentText()]
         settings["width"] = int(self.width_combobox.currentText())
-
         # Перестраиваем график
         self.plot_lissajous_figure(settings)
 
@@ -84,21 +80,15 @@ class LissajousWindow(qt.QMainWindow):
         # Удаляем устаревшие данные с графика
         for line in self._ax.lines:
             line.remove()
-
         # Генерируем сигнал для построения
-        self.generator = LissajousGenerator()
-        figure = self.generator.generate_figure(settings["freq_x"],
-                                                settings["freq_y"])
-
+        figure = self.figure_generator.generate(settings["freq_x"], settings["freq_y"])
         # Строим график
         self._ax.plot(figure.x_arr, figure.y_arr,
-                      color=settings["color"], linewidth=settings["width"])
-
+                      color=settings["color"],
+                      linewidth=settings["width"])
         plt.axis("off")
-
         # Нужно, чтобы все элементы не выходили за пределы холста
         plt.tight_layout()
-
         # Обновляем холст в окне
         self._fc.draw()
 
@@ -108,10 +98,8 @@ class LissajousWindow(qt.QMainWindow):
         """
         file_path, _ = qt.QFileDialog.getSaveFileName(self, "Сохранение изображения", "C:\\",
                                                             "PNG(*.png);;JPEG(*.jpg *.jpeg);;All Files(*.*) ")
-
         if file_path == "":
             return
-
         raise NotImplementedError("Тут всего одной строчки не хватает.")
 
 
