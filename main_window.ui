@@ -37,7 +37,7 @@
     </property>
     <layout class="QFormLayout" name="formLayout">
      <item row="0" column="1">
-      <widget class="QLineEdit" name="freq_y_lineedit">
+      <widget class="QLineEdit" name="freq_x_lineedit">
        <property name="text">
         <string>3</string>
        </property>
@@ -51,7 +51,7 @@
       </widget>
      </item>
      <item row="1" column="1">
-      <widget class="QLineEdit" name="freq_x_lineedit">
+      <widget class="QLineEdit" name="freq_y_lineedit">
        <property name="text">
         <string>2</string>
        </property>
