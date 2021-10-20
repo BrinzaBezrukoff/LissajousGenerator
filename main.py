@@ -96,11 +96,15 @@ class LissajousWindow(qt.QMainWindow):
         """
         Обработчик нажатия на кнопку сохранения настроек
         """
-        file_path, _ = qt.QFileDialog.getSaveFileName(self, "Сохранение изображения", "C:\\",
-                                                            "PNG(*.png);;JPEG(*.jpg *.jpeg);;All Files(*.*) ")
+        home_dir = os.path.expanduser("~")
+        file_path, _ = qt.QFileDialog.getSaveFileName(self,
+                                                      "Сохранение изображения",
+                                                      home_dir,
+                                                      "PNG(*.png);;JPEG(*.jpg *.jpeg);;All Files(*.*)")
         if file_path == "":
             return
-        raise NotImplementedError("Тут всего одной строчки не хватает.")
+        print(file_path)
+        self._fig.savefig(file_path)
 
 
 if __name__ == "__main__":
