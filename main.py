@@ -40,7 +40,7 @@ class LissajousWindow(qt.QMainWindow):
         self.setWindowIcon(icon)
 
         # Создаём холст matplotlib
-        self._fig = plt.figure(figsize=(4, 3), dpi=72)
+        self._fig = plt.figure(figsize=(4, 4), dpi=72)
         # Добавляем на холст matplotlib область для построения графиков.
         # В общем случае таких областей на холсте может быть несколько
         # Аргументы add_subplot() в данном случае:
@@ -53,13 +53,11 @@ class LissajousWindow(qt.QMainWindow):
         # Связываем созданный холст c окном
         self._fc.setParent(self)
         # Настраиваем размер и положение холста
-        self._fc.resize(400, 300)
+        self._fc.resize(400, 400)
         self._fc.move(20, 20)
 
         # Первичное построение фигуры
         self.plot_lissajous_figure()
-
-        self.resize(650, 300)
 
         self.plot_button.clicked.connect(self.plot_button_click_handler)
         self.save_button.clicked.connect(self.save_button_click_handler)
